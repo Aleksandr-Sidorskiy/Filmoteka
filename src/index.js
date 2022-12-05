@@ -1,22 +1,14 @@
-import ModalAPI from './js/components/filmModal/filmModal';
-import ModalFooter from './js/components/main/footerModal/footerModal';
+import ModalAPI from './js/components/filmModal/ModalApi';
+import FooterModal from './js/components/main/footerModal/footerModal';
+import MainPage from './js/PageMainClass';
 
-import Loader from './js/components/loader/loader-square';
-import libraryPage from './js/libraryPageClass.js';
-import mainPage from './js/mainPageClass';
-import Switcher from './js/components/main/header/switcher';
+MainPage.prototype.renderLoaderSquare(true);
 
-// new libraryPage();
-mainPage.prototype.renderLoaderSquare(true);
-
-let renderPage = new mainPage();
+let renderPage = new MainPage();
 
 renderPage.onChangePage();
 renderPage.renderFooter();
 
 new ModalAPI();
-new ModalFooter();
 
-const switcher = new Switcher()
-switcher.changeTheme();
-
+new FooterModal();

@@ -1,7 +1,8 @@
 import Pagination from 'tui-pagination';
-import fetchAndRender from './fetchAndRenderClass';
+import Switcher from './components/main/header/switcher';
+import FetchAndRender from './RenderAndFetchClass';
 
-export default class libraryPage extends fetchAndRender {
+export default class LibraryPage extends FetchAndRender {
   constructor(refs) {
     super(refs);
 
@@ -14,6 +15,8 @@ export default class libraryPage extends fetchAndRender {
 
     this.renderFromBtn();
     this.hideFirstEndPaginationBtn();
+
+    new Switcher();
   }
 
   renderFromBtn() {
@@ -42,17 +45,18 @@ export default class libraryPage extends fetchAndRender {
 
   getAndRenderLocalStorage(dataBtn) {
     const data = this.getItemsFromLocalStorage(dataBtn);
-    console.log(data);
+
     if (data === null) {
-      const failTenplate = `<div class="container nofilms"><h2> There are no films!</h2></div>`;
+      const failTenplate = `<div class="container no-films"><h2 > There are no films!</h2></div>`;
 
       this.refs.main.innerHTML = failTenplate;
       this.pagination(data);
 
       return;
     }
+
     if (data.length <= 0) {
-      const failTenplate = `<div class="container nofilms"><h2> There are no films!</h2></div>`;
+      const failTenplate = `<div class="container no-films"><h2> There are no films!</h2></div>`;
 
       this.refs.main.innerHTML = failTenplate;
       this.pagination(data);
@@ -120,6 +124,11 @@ export default class libraryPage extends fetchAndRender {
       const endSlice = currentPage * 9;
       this.renderMain(data.slice(startSlice, endSlice), true, false);
       this.hideFirstEndPaginationBtn();
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
     });
   }
 

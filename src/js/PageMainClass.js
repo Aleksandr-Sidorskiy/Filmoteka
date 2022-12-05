@@ -1,13 +1,16 @@
-import InfiniteScroll from 'infinite-scroll';
-import { getImage, urlTrendingMovies } from './API/api';
-import filmCardTemplate from './components/filmCardTemplate/filmCardTemplate';
-import fetchAndRender from './fetchAndRenderClass';
-import libraryPage from './libraryPageClass';
-import { Notify } from 'notiflix';
+import FetchAndRender from './RenderAndFetchClass.js';
 
-export default class mainPage extends fetchAndRender {
+import Notiflix, { Notify } from 'notiflix';
+import Switcher from './components/main/header/switcher';
+import LibraryPage from './PageLibraryClass.js';
+
+export default class MainPage extends FetchAndRender {
   constructor(refs) {
     super(refs);
+    Notiflix.Notify.init({
+      width: '280px',
+      position: 'center-top',
+    });
 
     this.renderHeader();
     this.onSearchMovie();
@@ -22,6 +25,7 @@ export default class mainPage extends fetchAndRender {
     const data = await this.fetchTrendFilms();
 
     this.renderMain(data, true);
+    new Switcher();
   }
 
   // =================== Btn_To_Top ============================
@@ -53,7 +57,7 @@ export default class mainPage extends fetchAndRender {
         e.target.dataset.main === 'home' ||
         e.target.dataset.main === 'homeLogo'
       ) {
-        new mainPage();
+        new MainPage();
 
         if (document.querySelector('.pagination')) {
           document.querySelector('.pagination').remove();
@@ -61,11 +65,11 @@ export default class mainPage extends fetchAndRender {
       }
 
       if (e.target.dataset.main === 'library') {
-        new libraryPage();
+        new LibraryPage();
       }
     });
   }
-// ============================ Search =======================================
+  // ============================ Search =======================================
   onSearchMovie() {
     this.refs.searchInput = document.querySelector('#searchField');
     let searchTimeout;
@@ -87,23 +91,14 @@ export default class mainPage extends fetchAndRender {
       searchTimeout = setTimeout(() => {
         const data = this.fetchSearchedMovie(this.input).then(data => {
           if (data.length === 0) {
-            const notification = `<p class="notification">Search result not successful.
-            Enter the correct movie name and try again!</p>`;
-            
-            document
-            
-              .querySelector('.main__header')
-              .insertAdjacentHTML('afterbegin', notification);
-            
-            
-            function notificationRemove() {
-                console.log('work');
-                document.querySelector('.notification').remove();
-              }
-              setTimeout(notificationRemove, 3000);
-              
-              this.fetchAndRenderTrendingFilms();
-              return  Notify.failure('Все Буде Україна!!!Але фільму з такою назвою не знайденно!');
+            this.fetchTrendFilms().then(data => this.renderMain(data, true));
+            this.input = '';
+            evt.target.value = this.input;
+            this.genresSelect.selectedIndex = 0;
+            this.genresSelectCloseBtn.classList.remove('active');
+            return Notify.failure(
+              'Search result not successful. Enter the correct movie name and try again'
+            );
           }
 
           this.renderMain(data, true, true, 'search');
